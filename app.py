@@ -1,16 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, Response
 import sqlite3
+import users_credential
 from datetime import datetime
 import os
 
 app = Flask(__name__)
 app.secret_key = '3,1415926535'
 
-# user hardcoded
-USERS = {
-    "eka.adrianti": {"password": "194746", "role": "admin"},
-    "kamar7.1": {"password": "smpitassyifa", "role": "viewer"},
-}
+# user in users_credential
+USERS = users_credential.USERS
 
 # --------- Fungsi DB ---------
 def get_db_path():
