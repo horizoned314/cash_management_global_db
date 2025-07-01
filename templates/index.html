@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Kas v1.0</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <p>Halo, {{ username }} ({{ session['role'] | capitalize }})</p>
+            <a href="/logout" class="logout-link">Logout</a>
+        </div>
+        
+        <h1>Manajemen Kas v1.0</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+        <h2>Saldo Saat Ini: <span class="saldo">Rp {{ "{:,}".format(saldo or 0) }}</span></h2>
+        {% if latest_income %}
+            <p>Pemasukan Terbaru: <span class="green">+Rp {{ "{:,}".format(latest_income['jumlah'] or 0) }}</span></p>
+        {% endif %}
+        {% if latest_expense %}
+            <p>Pengeluaran Terbaru: <span class="red">-Rp {{ "{:,}".format(latest_expense['jumlah'] or 0) }}</span></p>
+        {% endif %}
+
+        {% if session['role'] == 'admin' %}
+        <div class="form-area">
+            <form action="/tambah" method="post" class="single-form">
+                <input type="text" name="jumlah" placeholder="Jumlah (contoh: 100000)" required>
+                <input type="text" name="keterangan" placeholder="Keterangan" required>
+                <div class="button-group">
+                    <button class="green-btn" type="submit" name="kategori" value="Pemasukan">Input Pemasukan</button>
+                    <button class="red-btn" type="submit" name="kategori" value="Pengeluaran">Input Pengeluaran</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+
+        <div class="export">
+            <a href="/export" class="export-btn">⬇ Export ke CSV</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Kategori</th>
+                    <th>Jumlah</th>
+                    <th>Ket.</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                    <tr>
+                        <td>{{ item.tanggal }}</td>
+                        <td>{{ item.kategori }}</td>
+                        <td class="{{ 'green' if item.kategori == 'Pemasukan' else 'red' }}">Rp {{ "{:,}".format(item.jumlah or 0) }}</td>
+                        <td>{{ item.keterangan }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+                    <!-- PAGINATION SECTION -->
+            <div style="text-align:center; margin-top:20px;">
+                <form method="get" action="/dashboard" style="margin-bottom:10px;">
+                    Tampilkan 
+                    <select name="per_page" onchange="this.form.submit()">
+                        <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                        <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                        <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                        <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                    </select> 
+                    entri per halaman
+                    <input type="hidden" name="page" value="1">
+                </form>
+
+                <div class="pagination">
+                    {% if page > 1 %}
+                        <a href="{{ url_for('index', page=page-1, per_page=per_page) }}">⟨ Prev</a>
+                    {% endif %}
+                    Halaman {{ page }} dari {{ total_pages }}
+                    {% if page < total_pages %}
+                        <a href="{{ url_for('index', page=page+1, per_page=per_page) }}">Next ⟩</a>
+                    {% endif %}
+                </div>
+            </div>
+
+    </div>
+</body>
+</html>

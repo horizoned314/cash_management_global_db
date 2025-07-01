@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Manajemen Kas v1.0</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="login-header">
+    <h1>Manajemen Kas v1.0</h1>
+    <h2>by horizoned314</h2>
+    <h3>
+      <a href="https://github.com/horizoned314">Visit My Other Project on Github!</a>
+    </h3>
+  </div>
+    <div class="login-container">
+        <h2>Login</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="login-form">
+            <input type="text" name="username" placeholder="Username" required><br>
+            <input type="password" name="password" placeholder="Password" required><br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
